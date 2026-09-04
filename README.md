@@ -51,6 +51,11 @@ git push origin main v0.4.0
 
 ## Changelog
 
+### 0.4.3 — 2026-09-04
+
+- Restored the complete PrayerCal mark in the macOS launcher icon without cropping or distortion.
+- Updated the in-app What’s New screen to show the latest four releases.
+
 ### 0.4.2 — 2026-09-04
 
 - Fixed Settings opening behind other applications by explicitly activating PrayerCal and raising its window.

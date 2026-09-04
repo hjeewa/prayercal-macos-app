@@ -2,7 +2,7 @@ import SwiftUI
 
 private enum AppInformation {
     static var version: String {
-        Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "0.4.0"
+        Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "0.4.3"
     }
 
     static var build: String {
@@ -71,44 +71,79 @@ struct AboutSettingsView: View {
 }
 
 struct WhatsNewSettingsView: View {
-    private let added = [
-        "Next-prayer menu-bar status and a branded schedule popover with seven-day navigation.",
-        "Current-location refresh and searchable city selection for travel.",
-        "PrayerCal-compatible calculation methods and Standard or Hanafi Asr times.",
-        "Per-prayer reminders, durations, and optional full-screen alerts with snooze.",
-        "A pre-filled handoff to the PrayerCal web app for live Webcal subscriptions.",
-        "Optional Hijri dates, significant Sunni events, and Hijri birthday tracking.",
-        "Signed Sparkle update feeds and universal Apple Silicon and Intel builds."
+    private let releases = [
+        ReleaseNotes(
+            version: "0.4.3",
+            summary: "Restores the PrayerCal launcher icon and makes release history easier to review.",
+            changes: [
+                "Rebuilt the launcher icon from the original PrayerCal vector without cropping or distorting the mark.",
+                "Added the latest four releases to What’s New."
+            ]
+        ),
+        ReleaseNotes(
+            version: "0.4.2",
+            summary: "Makes Settings reliably visible when opened from the menu-bar popover.",
+            changes: ["Settings now activates PrayerCal and opens in front of other applications."]
+        ),
+        ReleaseNotes(
+            version: "0.4.1",
+            summary: "Updates the macOS application icon treatment.",
+            changes: ["Removed the unwanted outer inset from the launcher tile."]
+        ),
+        ReleaseNotes(
+            version: "0.4.0",
+            summary: "Makes prayer times the primary experience and brings the Mac app into the wider PrayerCal ecosystem.",
+            changes: [
+                "Added the next-prayer menu-bar status, daily schedule, and seven-day navigation.",
+                "Added onboarding, current-location refresh, city search, and PrayerCal-compatible calculations.",
+                "Added configurable reminders, full-screen alerts, and PrayerCal web calendar handoff.",
+                "Added optional Hijri dates, events, birthdays, and Sparkle automatic updates."
+            ]
+        )
     ]
 
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: 14) {
-                Text("What’s new in this version")
+            LazyVStack(alignment: .leading, spacing: 22) {
+                Text("What’s New")
                     .font(.title2.weight(.bold))
-                Text("v\(AppInformation.version) · 2026-09-04")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-                Text("SUMMARY")
-                    .font(.caption.weight(.bold))
-                    .foregroundStyle(.secondary)
-                    .tracking(1.3)
-                Text("PrayerCal 0.4 makes prayer times the primary experience and brings the Mac app into the wider PrayerCal ecosystem.")
-                Text("ADDED")
-                    .font(.caption.weight(.bold))
-                    .foregroundStyle(.secondary)
-                    .tracking(1.3)
-                    .padding(.top, 8)
-                ForEach(added, id: \.self) { item in
-                    HStack(alignment: .top, spacing: 10) {
-                        Image(systemName: "plus.circle.fill")
-                            .foregroundStyle(Color.accentColor)
-                            .padding(.top, 2)
-                        Text(item)
+                ForEach(Array(releases.enumerated()), id: \.element.version) { index, release in
+                    VStack(alignment: .leading, spacing: 10) {
+                        HStack(alignment: .firstTextBaseline) {
+                            Text("PrayerCal \(release.version)")
+                                .font(.headline)
+                            if index == 0 {
+                                Text("CURRENT")
+                                    .font(.caption2.weight(.bold))
+                                    .foregroundStyle(Color.accentColor)
+                            }
+                            Spacer()
+                            Text("4 September 2026")
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                        }
+                        Text(release.summary)
+                            .foregroundStyle(.secondary)
+                        ForEach(release.changes, id: \.self) { item in
+                            HStack(alignment: .top, spacing: 10) {
+                                Image(systemName: "plus.circle.fill")
+                                    .foregroundStyle(Color.accentColor)
+                                    .padding(.top, 2)
+                                Text(item)
+                            }
+                        }
                     }
+                    .padding(16)
+                    .background(Color(nsColor: .controlBackgroundColor), in: RoundedRectangle(cornerRadius: 12))
                 }
             }
             .frame(maxWidth: .infinity, alignment: .leading)
         }
     }
+}
+
+private struct ReleaseNotes {
+    let version: String
+    let summary: String
+    let changes: [String]
 }
