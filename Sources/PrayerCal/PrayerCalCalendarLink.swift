@@ -5,7 +5,7 @@ enum PrayerCalCalendarLink {
     @MainActor
     static func url(using store: PrayerStore) -> URL? {
         let settings = store.settings
-        var components = URLComponents(string: "https://prayercal.com/")
+        var components = URLComponents(string: "https://app.prayercal.com/")
         var items = [
             URLQueryItem(name: "source", value: "macos"),
             URLQueryItem(name: "lat", value: String(settings.latitude)),

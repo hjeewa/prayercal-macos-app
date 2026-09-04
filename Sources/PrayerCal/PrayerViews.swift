@@ -195,14 +195,14 @@ struct PrayerSettingsView: View {
 
                 GroupBox("Live calendar subscription") {
                     VStack(alignment: .leading, spacing: 10) {
-                        Text("Continue on PrayerCal.com with your location and prayer preferences already filled in. You can then subscribe with Apple Calendar, Google Calendar, or Outlook.")
+                        Text("Continue in the PrayerCal web app with your location and prayer preferences already filled in. You can then subscribe with Apple Calendar, Google Calendar, or Outlook.")
                             .font(.caption)
                             .foregroundStyle(.secondary)
                         Button {
                             store.update(draft)
                             PrayerCalCalendarLink.open(using: store)
                         } label: {
-                            Label("Continue on PrayerCal.com", systemImage: "arrow.up.right.square")
+                            Label("Open PrayerCal Web App", systemImage: "arrow.up.right.square")
                         }
                         .disabled(!draft.hasLocation)
                     }

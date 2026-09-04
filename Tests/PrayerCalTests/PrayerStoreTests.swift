@@ -67,7 +67,7 @@ final class PrayerStoreTests: XCTestCase {
             item.value.map { (item.name, $0) }
         })
 
-        XCTAssertEqual(url.host, "prayercal.com")
+        XCTAssertEqual(url.host, "app.prayercal.com")
         XCTAssertEqual(values["source"], "macos")
         XCTAssertEqual(values["city"], "London")
         XCTAssertEqual(values["method"], "15")
