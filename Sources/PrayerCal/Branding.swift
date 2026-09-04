@@ -3,18 +3,19 @@ import SwiftUI
 
 struct PrayerCalBrand: View {
     var compact = false
+    var scale: CGFloat = 1
 
     var body: some View {
-        HStack(spacing: compact ? 8 : 12) {
+        HStack(spacing: (compact ? 8 : 12) * scale) {
             brandIcon
-            .frame(width: compact ? 30 : 48, height: compact ? 30 : 48)
+                .frame(width: (compact ? 30 : 48) * scale, height: (compact ? 30 : 48) * scale)
 
             VStack(alignment: .leading, spacing: 0) {
                 Text("PrayerCal")
-                    .font(compact ? .headline : .title2.weight(.bold))
+                    .font(compact ? .headline : .system(size: 20 * scale, weight: .bold))
                 if !compact {
                     Text("Organise your day around your prayers")
-                        .font(.caption)
+                        .font(.system(size: 12 * scale))
                         .foregroundStyle(.secondary)
                 }
             }

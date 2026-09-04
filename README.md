@@ -51,6 +51,10 @@ git push origin main v0.4.0
 
 ## Changelog
 
+### 0.4.5 — 2026-09-04
+
+- Sharpened the PrayerCal logo on About, onboarding, and full-screen reminders by laying it out at its final size instead of scaling a rendered view.
+
 ### 0.4.4 — 2026-09-04
 
 - Removed the PrayerCal web app link from the Settings sidebar; it remains available in About and the calendar setup flow.

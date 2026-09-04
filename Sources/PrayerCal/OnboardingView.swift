@@ -56,8 +56,7 @@ struct OnboardingView: View {
 
     private var welcome: some View {
         VStack(spacing: 24) {
-            PrayerCalBrand()
-                .scaleEffect(1.25)
+            PrayerCalBrand(scale: 1.25)
             Text("Never lose track of the next prayer")
                 .font(.largeTitle.weight(.bold))
                 .multilineTextAlignment(.center)

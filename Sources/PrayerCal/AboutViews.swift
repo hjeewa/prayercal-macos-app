@@ -2,7 +2,7 @@ import SwiftUI
 
 private enum AppInformation {
     static var version: String {
-        Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "0.4.4"
+        Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "0.4.5"
     }
 
     static var build: String {
@@ -24,8 +24,7 @@ struct AboutSettingsView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 26) {
                 VStack(spacing: 10) {
-                    PrayerCalBrand()
-                        .scaleEffect(1.35)
+                    PrayerCalBrand(scale: 1.35)
                         .padding(.bottom, 8)
                     Text("Version \(AppInformation.version) · Build \(AppInformation.build)")
                         .font(.caption)
@@ -73,6 +72,11 @@ struct AboutSettingsView: View {
 struct WhatsNewSettingsView: View {
     private let releases = [
         ReleaseNotes(
+            version: "0.4.5",
+            summary: "Sharpens PrayerCal branding throughout the app.",
+            changes: ["Rendered the vector logo directly at its final size on About, onboarding, and full-screen reminders."]
+        ),
+        ReleaseNotes(
             version: "0.4.4",
             summary: "Tidies the Settings navigation.",
             changes: ["Moved the PrayerCal web app link out of the sidebar; it remains available in About and calendar setup."]
@@ -89,11 +93,6 @@ struct WhatsNewSettingsView: View {
             version: "0.4.2",
             summary: "Makes Settings reliably visible when opened from the menu-bar popover.",
             changes: ["Settings now activates PrayerCal and opens in front of other applications."]
-        ),
-        ReleaseNotes(
-            version: "0.4.1",
-            summary: "Updates the macOS application icon treatment.",
-            changes: ["Removed the unwanted outer inset from the launcher tile."]
         ),
     ]
 
