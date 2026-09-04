@@ -4,6 +4,7 @@ struct PrayerSummaryView: View {
     @Environment(PrayerStore.self) private var store
     @Environment(Clock.self) private var clock
     @State private var dayOffset = 0
+    @State private var locationService = LocationService()
 
     private var selectedDate: Date {
         var calendar = Calendar(identifier: .gregorian)
@@ -26,8 +27,25 @@ struct PrayerSummaryView: View {
                             Text("Next: \(next.name.displayName) · \(countdown(to: next.date))")
                                 .font(.title2.weight(.semibold))
                         }
+                        Text(store.settings.locationName)
+                            .lineLimit(1)
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
                     }
                     Spacer()
+                    Button {
+                        locationService.locate(for: store)
+                    } label: {
+                        if locationService.isLocating {
+                            ProgressView().controlSize(.small)
+                        } else {
+                            Image(systemName: "location.fill")
+                        }
+                    }
+                    .buttonStyle(.bordered)
+                    .controlSize(.small)
+                    .help("Update to my current location")
+                    .disabled(locationService.isLocating)
                 }
 
                 HStack {
@@ -57,9 +75,6 @@ struct PrayerSummaryView: View {
                 }
 
                 HStack {
-                    Label(store.settings.locationName, systemImage: "location.fill")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
                     Spacer()
                     SettingsLink { Label("Add to Calendar", systemImage: "calendar.badge.plus") }
                 }
