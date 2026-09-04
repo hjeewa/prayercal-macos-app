@@ -2,7 +2,7 @@ import SwiftUI
 
 private enum AppInformation {
     static var version: String {
-        Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "0.4.6"
+        Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "0.4.7"
     }
 
     static var build: String {
@@ -72,6 +72,11 @@ struct AboutSettingsView: View {
 struct WhatsNewSettingsView: View {
     private let releases = [
         ReleaseNotes(
+            version: "0.4.7",
+            summary: "Makes PrayerCal safe to install directly from the web.",
+            changes: ["Added Developer ID signing, Hardened Runtime, Apple notarisation, and stapled approval tickets to release DMGs."]
+        ),
+        ReleaseNotes(
             version: "0.4.6",
             summary: "Keeps version history inside PrayerCal.",
             changes: ["The Version History button in Sparkle’s update result now opens the in-app What’s New screen instead of GitHub."]
@@ -85,14 +90,6 @@ struct WhatsNewSettingsView: View {
             version: "0.4.4",
             summary: "Tidies the Settings navigation.",
             changes: ["Moved the PrayerCal web app link out of the sidebar; it remains available in About and calendar setup."]
-        ),
-        ReleaseNotes(
-            version: "0.4.3",
-            summary: "Restores the PrayerCal launcher icon and makes release history easier to review.",
-            changes: [
-                "Rebuilt the launcher icon from the original PrayerCal vector without cropping or distorting the mark.",
-                "Added the latest four releases to What’s New."
-            ]
         ),
     ]
 

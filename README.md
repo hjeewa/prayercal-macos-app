@@ -51,6 +51,10 @@ git push origin main v0.4.0
 
 ## Changelog
 
+### 0.4.7 — 2026-09-04
+
+- Added Developer ID signing, Hardened Runtime, Apple notarisation, and stapled approval tickets to release DMGs so Gatekeeper accepts downloaded builds.
+
 ### 0.4.6 — 2026-09-04
 
 - Made Sparkle’s Version History button open PrayerCal’s in-app What’s New screen instead of GitHub.
