@@ -46,6 +46,63 @@ enum HijriCalendar {
         max(0, Calendar.current.dateComponents([.year], from: birthday, to: date).year ?? 0)
     }
 
+    static func daysUntilNextBirthday(
+        bornOn birthday: Date,
+        asOf date: Date = .now,
+        timeZone: TimeZone = .current
+    ) -> Int {
+        var hijriCalendar = calendar
+        hijriCalendar.timeZone = timeZone
+        var gregorianCalendar = Calendar(identifier: .gregorian)
+        gregorianCalendar.timeZone = timeZone
+
+        let birth = hijriDate(from: birthday, timeZone: timeZone)
+        let current = hijriDate(from: date, timeZone: timeZone)
+        let today = gregorianCalendar.startOfDay(for: date)
+
+        for year in current.year...(current.year + 2) {
+            guard let firstOfBirthMonth = hijriCalendar.date(from: DateComponents(
+                calendar: hijriCalendar,
+                timeZone: timeZone,
+                year: year,
+                month: birth.month,
+                day: 1
+            )), let validDays = hijriCalendar.range(of: .day, in: .month, for: firstOfBirthMonth) else {
+                continue
+            }
+
+            // A birthday on day 30 falls on the last day in 29-day occurrences of that month.
+            let birthdayDay = min(birth.day, validDays.count)
+            guard let candidate = hijriCalendar.date(from: DateComponents(
+                calendar: hijriCalendar,
+                timeZone: timeZone,
+                year: year,
+                month: birth.month,
+                day: birthdayDay
+            )) else { continue }
+
+            let candidateDay = gregorianCalendar.startOfDay(for: candidate)
+            if candidateDay >= today {
+                return gregorianCalendar.dateComponents([.day], from: today, to: candidateDay).day ?? 0
+            }
+        }
+
+        return 0
+    }
+
+    static func birthdayCountdownText(
+        bornOn birthday: Date,
+        asOf date: Date = .now,
+        timeZone: TimeZone = .current
+    ) -> String {
+        let days = daysUntilNextBirthday(bornOn: birthday, asOf: date, timeZone: timeZone)
+        switch days {
+        case 0: return "today"
+        case 1: return "1 day"
+        default: return "\(days) days"
+        }
+    }
+
     static func monthName(_ month: Int) -> String {
         guard (1...monthNames.count).contains(month) else { return "" }
         return monthNames[month - 1]

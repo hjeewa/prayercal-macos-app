@@ -67,7 +67,7 @@ struct MenuContentView: View {
                     Text(person.name)
                     Spacer()
                     VStack(alignment: .trailing) {
-                        Text(birthday.shortFormatted)
+                        Text("\(birthday.shortFormatted) (\(HijriCalendar.birthdayCountdownText(bornOn: person.gregorianBirthday, asOf: clock.now)))")
                         Text("\(HijriCalendar.hijriAge(bornOn: person.gregorianBirthday, asOf: clock.now)) Hijri years")
                             .font(.caption)
                             .foregroundStyle(.secondary)

@@ -18,4 +18,26 @@ final class HijriCalendarTests: XCTestCase {
         let events = HijriEvents.upcoming(after: HijriDate(year: 1445, month: 12, day: 10), limit: 2)
         XCTAssertEqual(events.map(\.title), ["Islamic New Year", "Ashura"])
     }
+
+    func testBirthdayCountdownOnBirthday() throws {
+        let timeZone = try XCTUnwrap(TimeZone(secondsFromGMT: 0))
+        var hijri = Calendar(identifier: .islamicUmmAlQura)
+        hijri.timeZone = timeZone
+        let birthday = try XCTUnwrap(hijri.date(from: DateComponents(year: 1400, month: 9, day: 1)))
+        let today = try XCTUnwrap(hijri.date(from: DateComponents(year: 1445, month: 9, day: 1)))
+
+        XCTAssertEqual(HijriCalendar.daysUntilNextBirthday(bornOn: birthday, asOf: today, timeZone: timeZone), 0)
+        XCTAssertEqual(HijriCalendar.birthdayCountdownText(bornOn: birthday, asOf: today, timeZone: timeZone), "today")
+    }
+
+    func testBirthdayCountdownWithinMonth() throws {
+        let timeZone = try XCTUnwrap(TimeZone(secondsFromGMT: 0))
+        var hijri = Calendar(identifier: .islamicUmmAlQura)
+        hijri.timeZone = timeZone
+        let birthday = try XCTUnwrap(hijri.date(from: DateComponents(year: 1400, month: 9, day: 11)))
+        let today = try XCTUnwrap(hijri.date(from: DateComponents(year: 1445, month: 9, day: 1)))
+
+        XCTAssertEqual(HijriCalendar.daysUntilNextBirthday(bornOn: birthday, asOf: today, timeZone: timeZone), 10)
+        XCTAssertEqual(HijriCalendar.birthdayCountdownText(bornOn: birthday, asOf: today, timeZone: timeZone), "10 days")
+    }
 }

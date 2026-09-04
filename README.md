@@ -40,6 +40,12 @@ git push origin main v0.2.0
 
 ## Changelog
 
+### 0.2.0 — 2026-09-04
+
+- Added the number of days until each person's next Hijri birthday beside their birthday date.
+- Added natural countdown labels for birthdays that are today or tomorrow.
+- Handles birthdays on day 30 when that Hijri month has only 29 days in a later year.
+
 ### 0.1.0 — 2026-09-04
 
 - Initial release.
