@@ -8,6 +8,7 @@ struct OnboardingView: View {
     @State private var locationService = LocationService()
     @State private var enableNotifications = true
     @State private var reminderMinutes = 10
+    @State private var cityQuery = ""
 
     init(store: PrayerStore, onComplete: @escaping () -> Void) {
         self.store = store
@@ -87,18 +88,15 @@ struct OnboardingView: View {
             .controlSize(.large)
             .tint(.purple)
 
-            Text("Or enter coordinates")
+            Text("Or choose a city")
                 .font(.headline)
-            TextField("Location name", text: $draft.locationName)
             HStack {
-                TextField("Latitude", value: $draft.latitude, format: .number)
-                TextField("Longitude", value: $draft.longitude, format: .number)
-                TextField("Time zone", text: $draft.timeZoneIdentifier)
-                Button("Use") {
-                    draft.hasLocation = true
-                    if draft.locationName == "Choose a location" { draft.locationName = "Custom location" }
-                    store.update(draft)
+                TextField("City or town, e.g. Bradford, United Kingdom", text: $cityQuery)
+                    .onSubmit { locationService.selectCity(cityQuery, for: store) }
+                Button("Find City") {
+                    locationService.selectCity(cityQuery, for: store)
                 }
+                .disabled(cityQuery.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || locationService.isLocating)
             }
             if let error = locationService.errorMessage { Text(error).foregroundStyle(.red).font(.caption) }
         }

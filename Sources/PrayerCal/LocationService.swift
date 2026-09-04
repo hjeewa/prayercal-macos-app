@@ -24,6 +24,39 @@ final class LocationService: NSObject, @preconcurrency CLLocationManagerDelegate
         manager.requestLocation()
     }
 
+    func selectCity(_ query: String, for store: PrayerStore) {
+        let city = query.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !city.isEmpty else {
+            errorMessage = "Enter a city or town."
+            return
+        }
+        errorMessage = nil
+        isLocating = true
+        Task {
+            do {
+                guard let placemark = try await CLGeocoder().geocodeAddressString(city).first,
+                      let location = placemark.location else {
+                    throw CLError(.geocodeFoundNoResult)
+                }
+                let placeParts = [placemark.locality, placemark.administrativeArea, placemark.country]
+                    .compactMap { $0 }
+                    .reduce(into: [String]()) { result, part in
+                        if !result.contains(part) { result.append(part) }
+                    }
+                store.setLocation(
+                    latitude: location.coordinate.latitude,
+                    longitude: location.coordinate.longitude,
+                    name: placeParts.isEmpty ? city : placeParts.joined(separator: ", "),
+                    timeZone: placemark.timeZone
+                )
+                isLocating = false
+            } catch {
+                isLocating = false
+                errorMessage = "That city could not be found. Try including the country."
+            }
+        }
+    }
+
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         guard let location = locations.last else { return }
         isLocating = false
@@ -41,6 +74,6 @@ final class LocationService: NSObject, @preconcurrency CLLocationManagerDelegate
 
     func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
         isLocating = false
-        errorMessage = "Location could not be determined. You can enter coordinates manually."
+        errorMessage = "Location could not be determined. Search for your city instead."
     }
 }

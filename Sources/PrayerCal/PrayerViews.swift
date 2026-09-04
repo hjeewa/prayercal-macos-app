@@ -99,6 +99,7 @@ struct PrayerSettingsView: View {
     @State private var draft = PrayerSettings()
     @State private var locationService = LocationService()
     @State private var statusMessage: String?
+    @State private var cityQuery = ""
 
     var body: some View {
         ScrollView {
@@ -109,7 +110,12 @@ struct PrayerSettingsView: View {
                 GroupBox("Location") {
                     Form {
                         HStack {
-                            TextField("Location name", text: $draft.locationName)
+                            TextField("City or town", text: $cityQuery)
+                                .onSubmit { locationService.selectCity(cityQuery, for: store) }
+                            Button("Find City") {
+                                locationService.selectCity(cityQuery, for: store)
+                            }
+                            .disabled(cityQuery.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || locationService.isLocating)
                             Button {
                                 locationService.locate(for: store)
                             } label: {
@@ -118,19 +124,7 @@ struct PrayerSettingsView: View {
                             }
                             .disabled(locationService.isLocating)
                         }
-                        HStack {
-                            TextField("Latitude", value: $draft.latitude, format: .number.precision(.fractionLength(0...6)))
-                            TextField("Longitude", value: $draft.longitude, format: .number.precision(.fractionLength(0...6)))
-                            Button("Use Coordinates") {
-                                draft.hasLocation = true
-                                if draft.locationName == "Choose a location" { draft.locationName = "Custom location" }
-                                store.update(draft)
-                            }
-                        }
-                        TextField("Time zone", text: $draft.timeZoneIdentifier)
-                        Text("Use an IANA name such as Europe/London or America/New_York for manually entered coordinates.")
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
+                        LabeledContent("Current location", value: draft.locationName)
                         if let error = locationService.errorMessage {
                             Text(error).foregroundStyle(.red).font(.caption)
                         }
@@ -211,7 +205,10 @@ struct PrayerSettingsView: View {
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding(.trailing, 8)
         }
-        .onAppear { draft = store.settings }
+        .onAppear {
+            draft = store.settings
+            cityQuery = store.settings.hasLocation ? store.settings.locationName : ""
+        }
         .onChange(of: draft) { _, updated in store.update(updated) }
         .onChange(of: store.settings) { _, updated in draft = updated }
     }
