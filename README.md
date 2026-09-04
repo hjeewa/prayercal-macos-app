@@ -51,6 +51,10 @@ git push origin main v0.4.0
 
 ## Changelog
 
+### 0.4.1 — 2026-09-04
+
+- Rebuilt the macOS app icon as a full-bleed PrayerCal tile without the unwanted surrounding inset.
+
 ### 0.4.0 — 2026-09-04
 
 - Made prayer times the primary menu-bar experience, with the next prayer and today's full schedule.
