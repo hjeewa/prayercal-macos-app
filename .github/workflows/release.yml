@@ -1,0 +1,38 @@
+name: Release macOS app
+
+on:
+  push:
+    tags:
+      - "v[0-9]+.[0-9]+.[0-9]+"
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: macos-15
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Validate release version
+        run: test "$GITHUB_REF_NAME" = "v$(<VERSION)"
+
+      - name: Run tests
+        run: swift test
+
+      - name: Build universal DMG
+        env:
+          BUILD_NUMBER: ${{ github.run_number }}
+        run: ./package-dmg.sh
+
+      - name: Publish GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: >-
+          gh release create "$GITHUB_REF_NAME"
+          outputs/HijriBar.dmg
+          --title "HijriBar $GITHUB_REF_NAME"
+          --generate-notes
