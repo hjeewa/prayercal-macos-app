@@ -135,6 +135,16 @@ struct SettingsView: View {
                 }
 
                 Spacer()
+                SettingsSidebarRow(
+                    title: "About",
+                    systemImage: "info.circle",
+                    isSelected: selection == .about
+                ) { selection = .about }
+                SettingsSidebarRow(
+                    title: "What’s New",
+                    systemImage: "sparkles",
+                    isSelected: selection == .whatsNew
+                ) { selection = .whatsNew }
                 Link(destination: URL(string: "https://app.prayercal.com/")!) {
                     Label("PrayerCal Web App", systemImage: "questionmark.circle")
                         .foregroundStyle(.secondary)
@@ -168,12 +178,16 @@ struct SettingsView: View {
             CalendarSettingsView()
         case .hijriBirthdays:
             PeopleSettingsView()
+        case .about:
+            AboutSettingsView()
+        case .whatsNew:
+            WhatsNewSettingsView()
         }
     }
 }
 
 private enum SettingsSection {
-    case prayerTimes, hijriDates, hijriBirthdays
+    case prayerTimes, hijriDates, hijriBirthdays, about, whatsNew
 }
 
 private struct SettingsSidebarRow: View {
