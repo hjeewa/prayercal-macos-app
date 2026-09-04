@@ -108,9 +108,13 @@ struct PrayerSettingsView: View {
                     .font(.title2.weight(.semibold))
 
                 GroupBox("Location") {
-                    Form {
-                        HStack {
+                    Grid(alignment: .leading, horizontalSpacing: 10, verticalSpacing: 8) {
+                        GridRow {
+                            Text("City or town")
+                                .gridColumnAlignment(.trailing)
+                            HStack {
                             TextField("City or town", text: $cityQuery)
+                                .labelsHidden()
                                 .onSubmit { locationService.selectCity(cityQuery, for: store) }
                             Button("Find City") {
                                 locationService.selectCity(cityQuery, for: store)
@@ -123,13 +127,22 @@ struct PrayerSettingsView: View {
                                 else { Label("Use Current Location", systemImage: "location.fill") }
                             }
                             .disabled(locationService.isLocating)
+                            }
                         }
-                        LabeledContent("Current location", value: draft.locationName)
+                        GridRow {
+                            Text("Current location")
+                            Text(draft.locationName)
+                                .foregroundStyle(.secondary)
+                        }
                         if let error = locationService.errorMessage {
-                            Text(error).foregroundStyle(.red).font(.caption)
+                            GridRow {
+                                Color.clear.frame(width: 1, height: 1)
+                                Text(error).foregroundStyle(.red).font(.caption)
+                            }
                         }
                     }
                     .padding(8)
+                    .frame(maxWidth: .infinity, alignment: .leading)
                 }
 
                 GroupBox("Calculation") {
