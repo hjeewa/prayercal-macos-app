@@ -111,20 +111,88 @@ private struct EventRow: View {
 
 struct SettingsView: View {
     @Environment(PrayerStore.self) private var prayerStore
+    @State private var selection = SettingsSection.prayerTimes
 
     var body: some View {
-        TabView {
-            PrayerSettingsView()
-                .tabItem { Label("Prayer Times", systemImage: "clock") }
-            CalendarSettingsView()
-                .tabItem { Label("Hijri Dates", systemImage: "calendar") }
-            if prayerStore.settings.showHijriFeatures {
-                PeopleSettingsView()
-                    .tabItem { Label("Hijri Birthdays", systemImage: "gift") }
+        HStack(spacing: 0) {
+            VStack(alignment: .leading, spacing: 5) {
+                SettingsSidebarRow(
+                    title: "Prayer Times",
+                    systemImage: "clock",
+                    isSelected: selection == .prayerTimes
+                ) { selection = .prayerTimes }
+                SettingsSidebarRow(
+                    title: "Hijri Dates",
+                    systemImage: "calendar",
+                    isSelected: selection == .hijriDates
+                ) { selection = .hijriDates }
+                if prayerStore.settings.showHijriFeatures {
+                    SettingsSidebarRow(
+                        title: "Hijri Birthdays",
+                        systemImage: "gift",
+                        isSelected: selection == .hijriBirthdays
+                    ) { selection = .hijriBirthdays }
+                }
+
+                Spacer()
+                Link(destination: URL(string: "https://app.prayercal.com/")!) {
+                    Label("PrayerCal Web App", systemImage: "questionmark.circle")
+                        .foregroundStyle(.secondary)
+                }
+                .buttonStyle(.plain)
+                .padding(.horizontal, 10)
+                .padding(.bottom, 8)
             }
+            .padding(10)
+            .frame(width: 190)
+            .background(Color(nsColor: .controlBackgroundColor))
+
+            Divider()
+
+            settingsContent
+                .padding(20)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
-        .padding(20)
-        .frame(width: 800, height: 680)
+        .frame(width: 860, height: 680)
+        .onChange(of: prayerStore.settings.showHijriFeatures) { _, enabled in
+            if !enabled && selection == .hijriBirthdays { selection = .hijriDates }
+        }
+    }
+
+    @ViewBuilder
+    private var settingsContent: some View {
+        switch selection {
+        case .prayerTimes:
+            PrayerSettingsView()
+        case .hijriDates:
+            CalendarSettingsView()
+        case .hijriBirthdays:
+            PeopleSettingsView()
+        }
+    }
+}
+
+private enum SettingsSection {
+    case prayerTimes, hijriDates, hijriBirthdays
+}
+
+private struct SettingsSidebarRow: View {
+    let title: String
+    let systemImage: String
+    let isSelected: Bool
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            Label(title, systemImage: systemImage)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.horizontal, 10)
+                .padding(.vertical, 8)
+                .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .background(isSelected ? Color.accentColor.opacity(0.22) : Color.clear)
+        .clipShape(RoundedRectangle(cornerRadius: 7))
     }
 }
 
