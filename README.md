@@ -51,6 +51,10 @@ git push origin main v0.4.0
 
 ## Changelog
 
+### 0.4.2 — 2026-09-04
+
+- Fixed Settings opening behind other applications by explicitly activating PrayerCal and raising its window.
+
 ### 0.4.1 — 2026-09-04
 
 - Rebuilt the macOS app icon as a full-bleed PrayerCal tile without the unwanted surrounding inset.

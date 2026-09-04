@@ -37,7 +37,7 @@ struct MenuContentView: View {
             Divider()
 
             HStack {
-                SettingsLink { Label("Settings", systemImage: "gear") }
+                ForegroundSettingsButton { Label("Settings", systemImage: "gear") }
                 Button("Check for Updates…") { updater.checkForUpdates() }
                     .disabled(!updater.canCheckForUpdates)
                 Spacer()
@@ -87,6 +87,33 @@ struct MenuContentView: View {
                     }
                 }
             }
+        }
+    }
+}
+
+struct ForegroundSettingsButton<LabelContent: View>: View {
+    @Environment(\.openSettings) private var openSettings
+    private let label: () -> LabelContent
+
+    init(@ViewBuilder label: @escaping () -> LabelContent) {
+        self.label = label
+    }
+
+    var body: some View {
+        Button {
+            NSApplication.shared.activate(ignoringOtherApps: true)
+            openSettings()
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                NSApplication.shared.activate(ignoringOtherApps: true)
+                let settingsWindow = NSApplication.shared.windows.first {
+                    $0.identifier?.rawValue.contains("Settings") == true
+                }
+                settingsWindow?.collectionBehavior.insert(.moveToActiveSpace)
+                settingsWindow?.makeKeyAndOrderFront(nil)
+                settingsWindow?.orderFrontRegardless()
+            }
+        } label: {
+            label()
         }
     }
 }

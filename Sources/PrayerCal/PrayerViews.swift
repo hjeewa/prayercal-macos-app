@@ -17,7 +17,7 @@ struct PrayerSummaryView: View {
             VStack(alignment: .leading, spacing: 6) {
                 Label("Set your location for prayer times", systemImage: "location")
                     .font(.headline)
-                SettingsLink { Text("Open Prayer Settings") }
+                ForegroundSettingsButton { Text("Open Prayer Settings") }
             }
         } else {
             VStack(alignment: .leading, spacing: 9) {
