@@ -24,11 +24,8 @@ struct PrayerSummaryView: View {
                     VStack(alignment: .leading, spacing: 2) {
                         if let next = store.nextPrayer(asOf: clock.now) {
                             Text("Next: \(next.name.displayName) · \(countdown(to: next.date))")
-                                .font(.headline)
+                                .font(.title2.weight(.semibold))
                         }
-                        Text(store.settings.locationName)
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
                     }
                     Spacer()
                 }
@@ -58,6 +55,14 @@ struct PrayerSummaryView: View {
                             .monospacedDigit()
                     }
                 }
+
+                HStack {
+                    Label(store.settings.locationName, systemImage: "location.fill")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                    Spacer()
+                    SettingsLink { Label("Add to Calendar", systemImage: "calendar.badge.plus") }
+                }
             }
         }
     }
@@ -75,6 +80,8 @@ struct PrayerSettingsView: View {
     @State private var draft = PrayerSettings()
     @State private var locationService = LocationService()
     @State private var statusMessage: String?
+    @State private var subscription: PrayerCalSubscription?
+    @State private var isCreatingSubscription = false
 
     var body: some View {
         ScrollView {
@@ -159,10 +166,39 @@ struct PrayerSettingsView: View {
                         HStack {
                             Button("Schedule Reminders") { scheduleReminders() }
                                 .disabled(!draft.hasLocation)
-                            Button("Add Next Year to Calendar") { exportCalendar() }
-                                .disabled(!draft.hasLocation)
                             Spacer()
                             if let statusMessage { Text(statusMessage).font(.caption).foregroundStyle(.secondary) }
+                        }
+                    }
+                    .padding(8)
+                }
+
+
+                GroupBox("Live calendar subscription") {
+                    VStack(alignment: .leading, spacing: 10) {
+                        Text("Subscribe once and PrayerCal will keep your prayer calendar updated from the server.")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                        HStack {
+                            TextField("Email address", text: $draft.subscriptionEmail)
+                                .textContentType(.emailAddress)
+                            Button(subscription == nil ? "Create Subscription" : "Create Replacement") {
+                                createSubscription()
+                            }
+                            .disabled(!draft.hasLocation || isCreatingSubscription)
+                        }
+                        if isCreatingSubscription { ProgressView().controlSize(.small) }
+                        if let subscription {
+                            HStack {
+                                Button("Apple Calendar") { PrayerCalSubscriptionService.open(subscription.webcalUrl) }
+                                Button("Google Calendar") { PrayerCalSubscriptionService.open(subscription.googleUrl) }
+                                Button("Outlook") { PrayerCalSubscriptionService.open(subscription.outlookUrl) }
+                                Button("Copy Webcal Link") {
+                                    NSPasteboard.general.clearContents()
+                                    NSPasteboard.general.setString(subscription.webcalUrl, forType: .string)
+                                    statusMessage = "Webcal link copied."
+                                }
+                            }
                         }
                     }
                     .padding(8)
@@ -173,8 +209,13 @@ struct PrayerSettingsView: View {
                         .padding(8)
                 }
             }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(.trailing, 8)
         }
-        .onAppear { draft = store.settings }
+        .onAppear {
+            draft = store.settings
+            subscription = storedSubscription(from: draft.calendarSubscriptionURL)
+        }
         .onChange(of: draft) { _, updated in store.update(updated) }
         .onChange(of: store.settings) { _, updated in draft = updated }
     }
@@ -191,14 +232,34 @@ struct PrayerSettingsView: View {
         }
     }
 
-    private func exportCalendar() {
+    private func createSubscription() {
+        isCreatingSubscription = true
+        statusMessage = nil
         store.update(draft)
-        do {
-            _ = try PrayerCalendarExporter.export(using: store)
-            statusMessage = "Opened calendar import."
-        } catch {
-            statusMessage = "Could not create calendar file."
+        Task {
+            do {
+                let created = try await PrayerCalSubscriptionService.create(using: store, email: draft.subscriptionEmail)
+                subscription = created
+                draft.calendarSubscriptionURL = created.httpsUrl
+                store.update(draft)
+                statusMessage = "Live calendar ready."
+            } catch {
+                statusMessage = error.localizedDescription
+            }
+            isCreatingSubscription = false
         }
+    }
+
+    private func storedSubscription(from url: String?) -> PrayerCalSubscription? {
+        guard let url, let id = URL(string: url)?.lastPathComponent, !id.isEmpty else { return nil }
+        let webcal = url.replacingOccurrences(of: "https://", with: "webcal://")
+        return PrayerCalSubscription(
+            calendarId: id,
+            httpsUrl: url,
+            webcalUrl: webcal,
+            googleUrl: "https://calendar.google.com/calendar/u/0/r?cid=\(webcal.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? webcal)&pli=1",
+            outlookUrl: "https://outlook.office.com/calendar/0/addfromweb?url=\(url.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? url)&name=PrayerCal&mkt=en-001"
+        )
     }
 }
 

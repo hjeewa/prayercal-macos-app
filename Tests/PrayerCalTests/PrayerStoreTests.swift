@@ -50,18 +50,12 @@ final class PrayerStoreTests: XCTestCase {
         XCTAssertEqual(next.name, .dhuhr)
     }
 
-    func testCalendarExportIncludesEnabledPrayersAndAlarm() {
-        let store = makeStore()
-        var settings = store.settings
-        var fajr = settings.option(for: .fajr)
-        fajr.reminderEnabled = true
-        fajr.reminderMinutes = 15
-        settings.options[PrayerName.fajr.rawValue] = fajr
-        store.update(settings)
-
-        let output = PrayerCalendarExporter.contents(using: store, days: 1, startingAt: Date(timeIntervalSince1970: 1_788_500_000))
-        XCTAssertTrue(output.contains("SUMMARY:Fajr"))
-        XCTAssertTrue(output.contains("TRIGGER:-PT15M"))
-        XCTAssertFalse(output.contains("SUMMARY:Sunrise"))
+    func testCalculationMethodsMapToPrayerCalServerIDs() {
+        XCTAssertEqual(PrayerCalculationMethod.moonsightingCommittee.prayerCalMethodID, 15)
+        XCTAssertEqual(PrayerCalculationMethod.muslimWorldLeague.prayerCalMethodID, 3)
+        XCTAssertEqual(PrayerCalculationMethod.northAmerica.prayerCalMethodID, 2)
+        XCTAssertEqual(PrayerCalculationMethod.ummAlQura.prayerCalMethodID, 4)
+        XCTAssertEqual(PrayerCalculationMethod.turkey.prayerCalMethodID, 13)
+        XCTAssertEqual(PrayerCalculationMethod.dubai.prayerCalMethodID, 16)
     }
 }

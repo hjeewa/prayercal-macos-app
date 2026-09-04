@@ -82,6 +82,22 @@ enum PrayerCalculationMethod: String, Codable, CaseIterable, Identifiable {
         }
     }
 
+    var prayerCalMethodID: Int {
+        switch self {
+        case .moonsightingCommittee: 15
+        case .muslimWorldLeague: 3
+        case .northAmerica: 2
+        case .egyptian: 5
+        case .ummAlQura: 4
+        case .karachi: 1
+        case .turkey: 13
+        case .dubai: 16
+        case .qatar: 10
+        case .kuwait: 9
+        case .singapore: 11
+        }
+    }
+
     /// Final-minute corrections that reproduce PrayerCal.com's generated calendar.
     /// The website adds five minutes to Dhuhr and three to Maghrib after calculation;
     /// some Adhan presets already contain part of those adjustments.
@@ -153,6 +169,8 @@ struct PrayerSettings: Codable, Equatable {
     var highLatitudeOption = HighLatitudeOption.twilightAngle
     var showHijriFeatures = false
     var fullScreenRemindersEnabled = false
+    var subscriptionEmail = ""
+    var calendarSubscriptionURL: String?
     var options: [String: PrayerOption] = Dictionary(uniqueKeysWithValues: PrayerName.allCases.map {
         ($0.rawValue, PrayerOption(
             includeInCalendar: $0 != .sunrise,
@@ -167,7 +185,7 @@ struct PrayerSettings: Codable, Equatable {
     private enum CodingKeys: String, CodingKey {
         case hasLocation, locationName, latitude, longitude, timeZoneIdentifier
         case calculationMethod, asrMethod, highLatitudeOption, showHijriFeatures
-        case fullScreenRemindersEnabled, options
+        case fullScreenRemindersEnabled, subscriptionEmail, calendarSubscriptionURL, options
     }
 
     init(from decoder: Decoder) throws {
@@ -182,6 +200,8 @@ struct PrayerSettings: Codable, Equatable {
         highLatitudeOption = try values.decodeIfPresent(HighLatitudeOption.self, forKey: .highLatitudeOption) ?? .twilightAngle
         showHijriFeatures = try values.decodeIfPresent(Bool.self, forKey: .showHijriFeatures) ?? false
         fullScreenRemindersEnabled = try values.decodeIfPresent(Bool.self, forKey: .fullScreenRemindersEnabled) ?? false
+        subscriptionEmail = try values.decodeIfPresent(String.self, forKey: .subscriptionEmail) ?? ""
+        calendarSubscriptionURL = try values.decodeIfPresent(String.self, forKey: .calendarSubscriptionURL)
         options = try values.decodeIfPresent([String: PrayerOption].self, forKey: .options) ?? Self().options
     }
 

@@ -17,7 +17,8 @@ let package = Package(
             dependencies: [
                 .product(name: "Adhan", package: "adhan-swift"),
                 .product(name: "Sparkle", package: "Sparkle")
-            ]
+            ],
+            exclude: ["Resources"]
         ),
         .testTarget(name: "PrayerCalTests", dependencies: ["PrayerCal"])
     ]

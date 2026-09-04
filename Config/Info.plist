@@ -6,6 +6,8 @@
     <string>en</string>
     <key>CFBundleExecutable</key>
     <string>PrayerCal</string>
+    <key>CFBundleIconFile</key>
+    <string>PrayerCal</string>
     <key>CFBundleIdentifier</key>
     <string>com.prayercal.app</string>
     <key>CFBundleInfoDictionaryVersion</key>

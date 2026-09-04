@@ -1,3 +1,4 @@
+import AppKit
 import SwiftUI
 
 struct PrayerCalBrand: View {
@@ -5,13 +6,7 @@ struct PrayerCalBrand: View {
 
     var body: some View {
         HStack(spacing: compact ? 8 : 12) {
-            ZStack {
-                RoundedRectangle(cornerRadius: compact ? 8 : 13)
-                    .fill(LinearGradient(colors: [Color(red: 0.55, green: 0.35, blue: 0.86), Color(red: 0.32, green: 0.23, blue: 0.66)], startPoint: .topLeading, endPoint: .bottomTrailing))
-                Image(systemName: "moon.stars.fill")
-                    .foregroundStyle(.white)
-                    .font(compact ? .body : .title)
-            }
+            brandIcon
             .frame(width: compact ? 30 : 48, height: compact ? 30 : 48)
 
             VStack(alignment: .leading, spacing: 0) {
@@ -23,6 +18,17 @@ struct PrayerCalBrand: View {
                         .foregroundStyle(.secondary)
                 }
             }
+        }
+    }
+
+    @ViewBuilder
+    private var brandIcon: some View {
+        if let url = Bundle.main.url(forResource: "PrayerCalIcon", withExtension: "svg"),
+           let image = NSImage(contentsOf: url) {
+            Image(nsImage: image).resizable().scaledToFit()
+        } else {
+            RoundedRectangle(cornerRadius: compact ? 8 : 13)
+                .fill(Color(red: 0.584, green: 0.271, blue: 0.820))
         }
     }
 }

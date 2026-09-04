@@ -10,8 +10,7 @@ struct MenuContentView: View {
     private var today: HijriDate { HijriCalendar.hijriDate(from: clock.now) }
 
     var body: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 14) {
+        VStack(alignment: .leading, spacing: 14) {
             PrayerCalBrand(compact: true)
             Divider()
             PrayerSummaryView()
@@ -44,11 +43,10 @@ struct MenuContentView: View {
                 Spacer()
                 Button("Quit") { NSApplication.shared.terminate(nil) }
             }
-            }
         }
         .padding(16)
         .frame(width: 390)
-        .frame(maxHeight: 700)
+        .fixedSize(horizontal: false, vertical: true)
     }
 
     @ViewBuilder
@@ -126,7 +124,7 @@ struct SettingsView: View {
             }
         }
         .padding(20)
-        .frame(width: 680, height: 620)
+        .frame(width: 800, height: 680)
     }
 }
 

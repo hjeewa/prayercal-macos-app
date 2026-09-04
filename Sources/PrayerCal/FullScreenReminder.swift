@@ -75,9 +75,8 @@ private struct FullScreenPrayerAlert: View {
             LinearGradient(colors: [Color(red: 0.12, green: 0.08, blue: 0.22), Color(red: 0.33, green: 0.20, blue: 0.55)], startPoint: .topLeading, endPoint: .bottomTrailing)
                 .ignoresSafeArea()
             VStack(spacing: 26) {
-                Image(systemName: "moon.stars.fill")
-                    .font(.system(size: 66))
-                    .foregroundStyle(.white)
+                PrayerCalBrand()
+                    .scaleEffect(1.5)
                 Text(moment.name.displayName)
                     .font(.system(size: 70, weight: .bold, design: .rounded))
                 Text("It’s nearly time to pray")
