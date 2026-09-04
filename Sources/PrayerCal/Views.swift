@@ -116,12 +116,12 @@ struct SettingsView: View {
         TabView {
             PrayerSettingsView()
                 .tabItem { Label("Prayer Times", systemImage: "clock") }
+            CalendarSettingsView()
+                .tabItem { Label("Hijri Dates", systemImage: "calendar") }
             if prayerStore.settings.showHijriFeatures {
                 PeopleSettingsView()
                     .tabItem { Label("Hijri Birthdays", systemImage: "gift") }
             }
-            CalendarSettingsView()
-                .tabItem { Label("Hijri Dates", systemImage: "calendar") }
         }
         .padding(20)
         .frame(width: 800, height: 680)
