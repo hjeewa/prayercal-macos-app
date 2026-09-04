@@ -118,7 +118,7 @@ struct SettingsView: View {
                 .tabItem { Label("Prayer Times", systemImage: "clock") }
             if prayerStore.settings.showHijriFeatures {
                 PeopleSettingsView()
-                    .tabItem { Label("People", systemImage: "person.2") }
+                    .tabItem { Label("Hijri Birthdays", systemImage: "gift") }
             }
             CalendarSettingsView()
                 .tabItem { Label("Hijri Dates", systemImage: "calendar") }
@@ -136,7 +136,7 @@ private struct PeopleSettingsView: View {
     var body: some View {
         @Bindable var store = store
         VStack(alignment: .leading, spacing: 16) {
-            Text("People")
+            Text("Hijri Birthdays")
                 .font(.title2.weight(.semibold))
 
             GroupBox("Add a person") {
