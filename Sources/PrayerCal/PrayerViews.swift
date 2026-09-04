@@ -207,10 +207,6 @@ struct PrayerSettingsView: View {
                     .padding(8)
                 }
 
-                GroupBox("Optional Hijri features") {
-                    Toggle("Show Hijri date, events, and birthdays", isOn: $draft.showHijriFeatures)
-                        .padding(8)
-                }
             }
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding(.trailing, 8)

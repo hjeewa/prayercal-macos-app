@@ -119,9 +119,9 @@ struct SettingsView: View {
             if prayerStore.settings.showHijriFeatures {
                 PeopleSettingsView()
                     .tabItem { Label("People", systemImage: "person.2") }
-                CalendarSettingsView()
-                    .tabItem { Label("Hijri Dates", systemImage: "calendar") }
             }
+            CalendarSettingsView()
+                .tabItem { Label("Hijri Dates", systemImage: "calendar") }
         }
         .padding(20)
         .frame(width: 800, height: 680)
@@ -172,11 +172,23 @@ private struct PeopleSettingsView: View {
 
 private struct CalendarSettingsView: View {
     @Environment(EventStore.self) private var eventStore
+    @Environment(PrayerStore.self) private var prayerStore
     @State private var title = ""
     @State private var month = 1
     @State private var day = 1
     @State private var note = ""
     @State private var showingResetConfirmation = false
+
+    private var showHijriFeatures: Binding<Bool> {
+        Binding(
+            get: { prayerStore.settings.showHijriFeatures },
+            set: { value in
+                var settings = prayerStore.settings
+                settings.showHijriFeatures = value
+                prayerStore.update(settings)
+            }
+        )
+    }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 14) {
@@ -185,6 +197,16 @@ private struct CalendarSettingsView: View {
                     .font(.title2.weight(.semibold))
                 Spacer()
                 Button("Restore Defaults") { showingResetConfirmation = true }
+            }
+
+            GroupBox("Menu-bar display") {
+                VStack(alignment: .leading, spacing: 5) {
+                    Toggle("Show Hijri date, events, and birthdays", isOn: showHijriFeatures)
+                    Text("This controls the optional Hijri sections in the PrayerCal popover.")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+                .padding(8)
             }
 
             GroupBox("Add a date") {
