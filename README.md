@@ -18,8 +18,8 @@ Requires macOS 14 or later. Open the DMG and drag **PrayerCal** into **Applicati
 - Standard or Hanafi Asr calculation and configurable high-latitude rules
 - Per-prayer reminders, calendar inclusion, and event duration
 - Optional full-screen prayer reminders across every connected display, with snooze
-- Live Webcal subscriptions generated and continually refreshed by PrayerCal
-- One-click subscription for Apple Calendar, Google Calendar, and Outlook
+- One-click handoff to PrayerCal.com with location and prayer preferences pre-filled
+- Live Webcal subscriptions for Apple Calendar, Google Calendar, and Outlook through PrayerCal
 - Optional current Hijri date, observances, and birthdays in the menu-bar popover
 - Significant Sunni observances and upcoming dates
 - Gregorian-to-Hijri birthday conversion
@@ -61,7 +61,7 @@ git push origin main v0.4.0
 - Added per-prayer reminders with configurable lead times.
 - Added optional full-screen prayer alerts on every display, including a five-minute snooze.
 - Made the Hijri date, events, and birthday tools optional.
-- Added PrayerCal-hosted Webcal subscriptions with Apple Calendar, Google Calendar, Outlook, and copy-link actions.
+- Added a pre-filled handoff to PrayerCal.com for its existing Apple Calendar, Google Calendar, and Outlook Webcal flow.
 - Added Sparkle automatic update checks and a signed appcast release pipeline.
 - Added Adhan Swift calculation coverage and Calendar export tests.
 

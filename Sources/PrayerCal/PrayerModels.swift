@@ -169,8 +169,6 @@ struct PrayerSettings: Codable, Equatable {
     var highLatitudeOption = HighLatitudeOption.twilightAngle
     var showHijriFeatures = false
     var fullScreenRemindersEnabled = false
-    var subscriptionEmail = ""
-    var calendarSubscriptionURL: String?
     var options: [String: PrayerOption] = Dictionary(uniqueKeysWithValues: PrayerName.allCases.map {
         ($0.rawValue, PrayerOption(
             includeInCalendar: $0 != .sunrise,
@@ -185,7 +183,7 @@ struct PrayerSettings: Codable, Equatable {
     private enum CodingKeys: String, CodingKey {
         case hasLocation, locationName, latitude, longitude, timeZoneIdentifier
         case calculationMethod, asrMethod, highLatitudeOption, showHijriFeatures
-        case fullScreenRemindersEnabled, subscriptionEmail, calendarSubscriptionURL, options
+        case fullScreenRemindersEnabled, options
     }
 
     init(from decoder: Decoder) throws {
@@ -200,8 +198,6 @@ struct PrayerSettings: Codable, Equatable {
         highLatitudeOption = try values.decodeIfPresent(HighLatitudeOption.self, forKey: .highLatitudeOption) ?? .twilightAngle
         showHijriFeatures = try values.decodeIfPresent(Bool.self, forKey: .showHijriFeatures) ?? false
         fullScreenRemindersEnabled = try values.decodeIfPresent(Bool.self, forKey: .fullScreenRemindersEnabled) ?? false
-        subscriptionEmail = try values.decodeIfPresent(String.self, forKey: .subscriptionEmail) ?? ""
-        calendarSubscriptionURL = try values.decodeIfPresent(String.self, forKey: .calendarSubscriptionURL)
         options = try values.decodeIfPresent([String: PrayerOption].self, forKey: .options) ?? Self().options
     }
 

@@ -58,4 +58,20 @@ final class PrayerStoreTests: XCTestCase {
         XCTAssertEqual(PrayerCalculationMethod.turkey.prayerCalMethodID, 13)
         XCTAssertEqual(PrayerCalculationMethod.dubai.prayerCalMethodID, 16)
     }
+
+    func testCalendarHandoffPrefillsPrayerCalWebsite() throws {
+        let store = makeStore()
+        let url = try XCTUnwrap(PrayerCalCalendarLink.url(using: store))
+        let components = try XCTUnwrap(URLComponents(url: url, resolvingAgainstBaseURL: false))
+        let values = Dictionary(uniqueKeysWithValues: (components.queryItems ?? []).compactMap { item in
+            item.value.map { (item.name, $0) }
+        })
+
+        XCTAssertEqual(url.host, "prayercal.com")
+        XCTAssertEqual(values["source"], "macos")
+        XCTAssertEqual(values["city"], "London")
+        XCTAssertEqual(values["method"], "15")
+        XCTAssertEqual(values["school"], "shafi")
+        XCTAssertEqual(values["fajr"], "1,15,0,10")
+    }
 }
