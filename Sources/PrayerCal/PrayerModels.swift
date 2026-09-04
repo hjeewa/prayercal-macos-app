@@ -134,29 +134,6 @@ enum AsrMethod: String, Codable, CaseIterable, Identifiable {
     var madhab: Madhab { self == .hanafi ? .hanafi : .shafi }
 }
 
-enum HighLatitudeOption: String, Codable, CaseIterable, Identifiable {
-    case recommended, middleOfNight, seventhOfNight, twilightAngle
-    var id: String { rawValue }
-
-    var displayName: String {
-        switch self {
-        case .recommended: "Automatic (recommended)"
-        case .middleOfNight: "Middle of the night"
-        case .seventhOfNight: "Seventh of the night"
-        case .twilightAngle: "Twilight angle"
-        }
-    }
-
-    var rule: HighLatitudeRule? {
-        switch self {
-        case .recommended: nil
-        case .middleOfNight: .middleOfTheNight
-        case .seventhOfNight: .seventhOfTheNight
-        case .twilightAngle: .twilightAngle
-        }
-    }
-}
-
 struct PrayerSettings: Codable, Equatable {
     var hasLocation = false
     var locationName = "Choose a location"
@@ -165,8 +142,6 @@ struct PrayerSettings: Codable, Equatable {
     var timeZoneIdentifier = TimeZone.current.identifier
     var calculationMethod = PrayerCalculationMethod.moonsightingCommittee
     var asrMethod = AsrMethod.standard
-    // PrayerCal.com uses its angle-based rule by default.
-    var highLatitudeOption = HighLatitudeOption.twilightAngle
     var showHijriFeatures = false
     var fullScreenRemindersEnabled = false
     var options: [String: PrayerOption] = Dictionary(uniqueKeysWithValues: PrayerName.allCases.map {
@@ -182,7 +157,7 @@ struct PrayerSettings: Codable, Equatable {
 
     private enum CodingKeys: String, CodingKey {
         case hasLocation, locationName, latitude, longitude, timeZoneIdentifier
-        case calculationMethod, asrMethod, highLatitudeOption, showHijriFeatures
+        case calculationMethod, asrMethod, showHijriFeatures
         case fullScreenRemindersEnabled, options
     }
 
@@ -195,7 +170,6 @@ struct PrayerSettings: Codable, Equatable {
         timeZoneIdentifier = try values.decodeIfPresent(String.self, forKey: .timeZoneIdentifier) ?? TimeZone.current.identifier
         calculationMethod = try values.decodeIfPresent(PrayerCalculationMethod.self, forKey: .calculationMethod) ?? .moonsightingCommittee
         asrMethod = try values.decodeIfPresent(AsrMethod.self, forKey: .asrMethod) ?? .standard
-        highLatitudeOption = try values.decodeIfPresent(HighLatitudeOption.self, forKey: .highLatitudeOption) ?? .twilightAngle
         showHijriFeatures = try values.decodeIfPresent(Bool.self, forKey: .showHijriFeatures) ?? false
         fullScreenRemindersEnabled = try values.decodeIfPresent(Bool.self, forKey: .fullScreenRemindersEnabled) ?? false
         options = try values.decodeIfPresent([String: PrayerOption].self, forKey: .options) ?? Self().options

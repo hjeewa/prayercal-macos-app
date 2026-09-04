@@ -114,9 +114,6 @@ struct OnboardingView: View {
             Picker("Asr method", selection: $draft.asrMethod) {
                 ForEach(AsrMethod.allCases) { Text($0.displayName).tag($0) }
             }
-            Picker("High-latitude rule", selection: $draft.highLatitudeOption) {
-                ForEach(HighLatitudeOption.allCases) { Text($0.displayName).tag($0) }
-            }
         }
     }
 

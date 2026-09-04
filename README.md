@@ -15,7 +15,7 @@ Requires macOS 14 or later. Open the DMG and drag **PrayerCal** into **Applicati
 - First-run onboarding for location, calculation method, reminders, and optional Hijri tools
 - Moonsighting Committee, MWL, ISNA, Umm al-Qura, Karachi and regional calculation methods
 - Compatibility adjustments matching PrayerCal's existing calendar generator
-- Standard or Hanafi Asr calculation and configurable high-latitude rules
+- Standard or Hanafi Asr calculation with PrayerCal's angle-based high-latitude handling
 - Per-prayer reminders, calendar inclusion, and event duration
 - Optional full-screen prayer reminders across every connected display, with snooze
 - One-click handoff to PrayerCal.com with location and prayer preferences pre-filled
@@ -57,7 +57,7 @@ git push origin main v0.4.0
 - Added a branded first-run onboarding flow and seven-day prayer schedule navigation.
 - Added current-location and manual-coordinate setup with location-aware time zones.
 - Added Moonsighting Committee, MWL, ISNA, Umm al-Qura, Karachi, Diyanet and regional calculation methods.
-- Added Standard and Hanafi Asr calculation plus configurable high-latitude rules.
+- Added Standard and Hanafi Asr calculation with PrayerCal-compatible high-latitude handling.
 - Added per-prayer reminders with configurable lead times.
 - Added optional full-screen prayer alerts on every display, including a five-minute snooze.
 - Made the Hijri date, events, and birthday tools optional.

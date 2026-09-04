@@ -144,11 +144,6 @@ struct PrayerSettingsView: View {
                                 Text(method.displayName).tag(method)
                             }
                         }
-                        Picker("High-latitude rule", selection: $draft.highLatitudeOption) {
-                            ForEach(HighLatitudeOption.allCases) { option in
-                                Text(option.displayName).tag(option)
-                            }
-                        }
                     }
                     .padding(8)
                 }

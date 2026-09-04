@@ -46,7 +46,8 @@ final class PrayerStore {
         let coordinates = Coordinates(latitude: settings.latitude, longitude: settings.longitude)
         var parameters = settings.calculationMethod.adhanMethod.params
         parameters.madhab = settings.asrMethod.madhab
-        parameters.highLatitudeRule = settings.highLatitudeOption.rule
+        // PrayerCal's PHP engine always uses its angle-based high-latitude default.
+        parameters.highLatitudeRule = .twilightAngle
         parameters.adjustments = settings.calculationMethod.prayerCalAdjustments
         guard let times = PrayerTimes(coordinates: coordinates, date: components, calculationParameters: parameters) else { return [] }
         return [
