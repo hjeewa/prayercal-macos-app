@@ -2,7 +2,7 @@ import SwiftUI
 
 private enum AppInformation {
     static var version: String {
-        Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "0.4.5"
+        Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "0.4.6"
     }
 
     static var build: String {
@@ -72,6 +72,11 @@ struct AboutSettingsView: View {
 struct WhatsNewSettingsView: View {
     private let releases = [
         ReleaseNotes(
+            version: "0.4.6",
+            summary: "Keeps version history inside PrayerCal.",
+            changes: ["The Version History button in Sparkle’s update result now opens the in-app What’s New screen instead of GitHub."]
+        ),
+        ReleaseNotes(
             version: "0.4.5",
             summary: "Sharpens PrayerCal branding throughout the app.",
             changes: ["Rendered the vector logo directly at its final size on About, onboarding, and full-screen reminders."]
@@ -88,11 +93,6 @@ struct WhatsNewSettingsView: View {
                 "Rebuilt the launcher icon from the original PrayerCal vector without cropping or distorting the mark.",
                 "Added the latest four releases to What’s New."
             ]
-        ),
-        ReleaseNotes(
-            version: "0.4.2",
-            summary: "Makes Settings reliably visible when opened from the menu-bar popover.",
-            changes: ["Settings now activates PrayerCal and opens in front of other applications."]
         ),
     ]
 

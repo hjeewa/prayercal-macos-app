@@ -51,6 +51,10 @@ git push origin main v0.4.0
 
 ## Changelog
 
+### 0.4.6 — 2026-09-04
+
+- Made Sparkle’s Version History button open PrayerCal’s in-app What’s New screen instead of GitHub.
+
 ### 0.4.5 — 2026-09-04
 
 - Sharpened the PrayerCal logo on About, onboarding, and full-screen reminders by laying it out at its final size instead of scaling a rendered view.

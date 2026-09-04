@@ -187,6 +187,9 @@ struct SettingsView: View {
         .onChange(of: prayerStore.settings.showHijriFeatures) { _, enabled in
             if !enabled && selection == .hijriBirthdays { selection = .hijriDates }
         }
+        .onReceive(NotificationCenter.default.publisher(for: .showPrayerCalWhatsNew)) { _ in
+            selection = .whatsNew
+        }
     }
 
     @ViewBuilder
