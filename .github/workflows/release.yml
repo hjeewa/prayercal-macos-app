@@ -23,10 +23,43 @@ jobs:
       - name: Run tests
         run: swift test
 
-      - name: Build universal DMG
+      - name: Import Developer ID certificate
+        env:
+          BUILD_CERTIFICATE_BASE64: ${{ secrets.BUILD_CERTIFICATE_BASE64 }}
+          P12_PASSWORD: ${{ secrets.P12_PASSWORD }}
+          KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
+        run: |
+          certificate_path="$RUNNER_TEMP/build_certificate.p12"
+          keychain_path="$RUNNER_TEMP/prayercal-signing.keychain-db"
+          echo -n "$BUILD_CERTIFICATE_BASE64" | base64 --decode -o "$certificate_path"
+          security create-keychain -p "$KEYCHAIN_PASSWORD" "$keychain_path"
+          security set-keychain-settings -lut 21600 "$keychain_path"
+          security unlock-keychain -p "$KEYCHAIN_PASSWORD" "$keychain_path"
+          security import "$certificate_path" -P "$P12_PASSWORD" -A -t cert -f pkcs12 -k "$keychain_path"
+          security list-keychain -d user -s "$keychain_path"
+          security set-key-partition-list -S apple-tool:,apple: -k "$KEYCHAIN_PASSWORD" "$keychain_path"
+
+      - name: Build signed universal DMG
         env:
           BUILD_NUMBER: ${{ github.run_number }}
+          CODE_SIGN_IDENTITY: "Developer ID Application: Verge Labs LTD (PB3444382S)"
         run: ./package-dmg.sh
+
+      - name: Notarize and staple DMG
+        env:
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+        run: |
+          xcrun notarytool submit outputs/PrayerCal.dmg \
+            --apple-id "$APPLE_ID" \
+            --password "$APPLE_APP_SPECIFIC_PASSWORD" \
+            --team-id "$APPLE_TEAM_ID" \
+            --wait
+          xcrun stapler staple outputs/PrayerCal.dmg
+          xcrun stapler validate outputs/PrayerCal.dmg
+          codesign --verify --verbose=2 outputs/PrayerCal.dmg
+          spctl --assess --type open --context context:primary-signature --verbose=4 outputs/PrayerCal.dmg
 
       - name: Generate signed update feed
         env:
@@ -51,3 +84,7 @@ jobs:
           outputs/appcast.xml
           --title "PrayerCal $GITHUB_REF_NAME"
           --generate-notes
+
+      - name: Delete temporary signing keychain
+        if: always()
+        run: security delete-keychain "$RUNNER_TEMP/prayercal-signing.keychain-db" || true

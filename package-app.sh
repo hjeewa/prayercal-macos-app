@@ -5,6 +5,7 @@ project_dir=${0:A:h}
 app_dir="$project_dir/outputs/PrayerCal.app"
 version=$(<"$project_dir/VERSION")
 build_number=${BUILD_NUMBER:-$(git -C "$project_dir" rev-list --count HEAD 2>/dev/null || echo 1)}
+code_sign_identity=${CODE_SIGN_IDENTITY:--}
 
 if [[ -d "$app_dir" ]]; then
     previous_build_dir=$(mktemp -d)
@@ -23,7 +24,11 @@ install_name_tool -add_rpath "@executable_path/../Frameworks" "$app_dir/Contents
 cp "$project_dir/Config/Info.plist" "$app_dir/Contents/Info.plist"
 /usr/libexec/PlistBuddy -c "Set :CFBundleShortVersionString $version" "$app_dir/Contents/Info.plist"
 /usr/libexec/PlistBuddy -c "Set :CFBundleVersion $build_number" "$app_dir/Contents/Info.plist"
-codesign --force --deep --sign - "$app_dir"
+if [[ "$code_sign_identity" == "-" ]]; then
+    codesign --force --deep --sign - "$app_dir"
+else
+    codesign --force --deep --options runtime --timestamp --sign "$code_sign_identity" "$app_dir"
+fi
 
 ditto -c -k --sequesterRsrc --keepParent "$app_dir" "$project_dir/outputs/PrayerCal.zip"
 echo "$app_dir"
