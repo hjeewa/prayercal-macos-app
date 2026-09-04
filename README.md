@@ -1,6 +1,6 @@
 # PrayerCal
 
-A prayer-focused native macOS menu-bar app. Its first features provide the current Hijri date, notable Sunni calendar events, and saved people's Hijri birthdays and ages.
+A prayer-focused native macOS menu-bar app that keeps the next prayer visible and makes prayer times, reminders, and calendar planning readily accessible. Optional Hijri tools cover dates, notable Sunni events, and birthdays.
 
 ## Download
 
@@ -10,12 +10,23 @@ Requires macOS 14 or later. Open the DMG and drag **PrayerCal** into **Applicati
 
 ## Features
 
-- Current Hijri date in the macOS menu bar
+- Local prayer times and next-prayer menu-bar status
+- Branded prayer popover with today plus seven days of forward navigation
+- First-run onboarding for location, calculation method, reminders, and optional Hijri tools
+- Moonsighting Committee, MWL, ISNA, Umm al-Qura, Karachi and regional calculation methods
+- Compatibility adjustments matching PrayerCal's existing calendar generator
+- Standard or Hanafi Asr calculation with PrayerCal's angle-based high-latitude handling
+- Per-prayer reminders, calendar inclusion, and event duration
+- Optional full-screen prayer reminders across every connected display, with snooze
+- One-click handoff to PrayerCal.com with location and prayer preferences pre-filled
+- Live Webcal subscriptions for Apple Calendar, Google Calendar, and Outlook through PrayerCal
+- Optional current Hijri date, observances, and birthdays in the menu-bar popover
 - Significant Sunni observances and upcoming dates
 - Gregorian-to-Hijri birthday conversion
 - Hijri age tracking for multiple people
 - Offline operation using Apple's Umm al-Qura calendar
 - Universal app for Apple Silicon and Intel Macs
+- Automatic update checks powered by Sparkle, with signed update feeds
 
 ## Run locally
 
@@ -23,7 +34,7 @@ Requires macOS 14 or later. Open the DMG and drag **PrayerCal** into **Applicati
 swift run PrayerCal
 ```
 
-The app appears in the menu bar as a short Hijri date. Click it to see the full date, observances, and saved birthdays. Open **Settings** from the popover to add or edit people.
+The app appears in the menu bar as the next prayer and its time. Click it to see the upcoming schedule and navigate up to seven days ahead. Open **Settings** to configure prayer calculations, reminders, Calendar export, and the optional Hijri tools.
 
 Hijri conversion uses Apple's Umm al-Qura calendar and works offline. Calendar dates can differ by a day depending on local moon sighting.
 
@@ -39,6 +50,20 @@ git push origin main v0.4.0
 ```
 
 ## Changelog
+
+### 0.4.0 — 2026-09-04
+
+- Made prayer times the primary menu-bar experience, with the next prayer and today's full schedule.
+- Added a branded first-run onboarding flow and seven-day prayer schedule navigation.
+- Added current-location and manual-coordinate setup with location-aware time zones.
+- Added Moonsighting Committee, MWL, ISNA, Umm al-Qura, Karachi, Diyanet and regional calculation methods.
+- Added Standard and Hanafi Asr calculation with PrayerCal-compatible high-latitude handling.
+- Added per-prayer reminders with configurable lead times.
+- Added optional full-screen prayer alerts on every display, including a five-minute snooze.
+- Made the Hijri date, events, and birthday tools optional.
+- Added a pre-filled handoff to PrayerCal.com for its existing Apple Calendar, Google Calendar, and Outlook Webcal flow.
+- Added Sparkle automatic update checks and a signed appcast release pipeline.
+- Added Adhan Swift calculation coverage and Calendar export tests.
 
 ### 0.3.0 — 2026-09-04
 

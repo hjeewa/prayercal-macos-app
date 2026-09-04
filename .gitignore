@@ -2,5 +2,6 @@
 .build/
 DerivedData/
 outputs/
+work/
 *.xcuserstate
 xcuserdata/

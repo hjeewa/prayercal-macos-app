@@ -3,38 +3,50 @@ import SwiftUI
 struct MenuContentView: View {
     @Environment(PersonStore.self) private var store
     @Environment(EventStore.self) private var eventStore
+    @Environment(PrayerStore.self) private var prayerStore
+    @Environment(AppUpdater.self) private var updater
     @Environment(Clock.self) private var clock
 
     private var today: HijriDate { HijriCalendar.hijriDate(from: clock.now) }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 14) {
-            VStack(alignment: .leading, spacing: 3) {
-                Text(today.formatted)
-                    .font(.title2.weight(.semibold))
-                Text(clock.now.formatted(date: .complete, time: .omitted))
-                    .foregroundStyle(.secondary)
-            }
-
+            PrayerCalBrand(compact: true)
             Divider()
+            PrayerSummaryView()
 
-            eventsSection
-
-            if !store.people.isEmpty {
+            if prayerStore.settings.showHijriFeatures {
                 Divider()
-                peopleSection
+
+                VStack(alignment: .leading, spacing: 3) {
+                    Text(today.formatted)
+                        .font(.title2.weight(.semibold))
+                    Text(clock.now.formatted(date: .complete, time: .omitted))
+                        .foregroundStyle(.secondary)
+                }
+
+                Divider()
+                eventsSection
+
+                if !store.people.isEmpty {
+                    Divider()
+                    peopleSection
+                }
             }
 
             Divider()
 
             HStack {
                 SettingsLink { Label("Settings", systemImage: "gear") }
+                Button("Check for Updates…") { updater.checkForUpdates() }
+                    .disabled(!updater.canCheckForUpdates)
                 Spacer()
                 Button("Quit") { NSApplication.shared.terminate(nil) }
             }
         }
         .padding(16)
-        .frame(width: 360)
+        .frame(width: 390)
+        .fixedSize(horizontal: false, vertical: true)
     }
 
     @ViewBuilder
@@ -98,15 +110,103 @@ private struct EventRow: View {
 }
 
 struct SettingsView: View {
+    @Environment(PrayerStore.self) private var prayerStore
+    @State private var selection = SettingsSection.prayerTimes
+
     var body: some View {
-        TabView {
-            PeopleSettingsView()
-                .tabItem { Label("People", systemImage: "person.2") }
-            CalendarSettingsView()
-                .tabItem { Label("Calendar Dates", systemImage: "calendar") }
+        HStack(spacing: 0) {
+            VStack(alignment: .leading, spacing: 5) {
+                SettingsSidebarRow(
+                    title: "Prayer Times",
+                    systemImage: "clock",
+                    isSelected: selection == .prayerTimes
+                ) { selection = .prayerTimes }
+                SettingsSidebarRow(
+                    title: "Hijri Dates",
+                    systemImage: "calendar",
+                    isSelected: selection == .hijriDates
+                ) { selection = .hijriDates }
+                if prayerStore.settings.showHijriFeatures {
+                    SettingsSidebarRow(
+                        title: "Hijri Birthdays",
+                        systemImage: "gift",
+                        isSelected: selection == .hijriBirthdays
+                    ) { selection = .hijriBirthdays }
+                }
+
+                Spacer()
+                SettingsSidebarRow(
+                    title: "About",
+                    systemImage: "info.circle",
+                    isSelected: selection == .about
+                ) { selection = .about }
+                SettingsSidebarRow(
+                    title: "What’s New",
+                    systemImage: "sparkles",
+                    isSelected: selection == .whatsNew
+                ) { selection = .whatsNew }
+                Link(destination: URL(string: "https://app.prayercal.com/")!) {
+                    Label("PrayerCal Web App", systemImage: "questionmark.circle")
+                        .foregroundStyle(.secondary)
+                }
+                .buttonStyle(.plain)
+                .padding(.horizontal, 10)
+                .padding(.bottom, 8)
+            }
+            .padding(10)
+            .frame(width: 190)
+            .background(Color(nsColor: .controlBackgroundColor))
+
+            Divider()
+
+            settingsContent
+                .padding(20)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
-        .padding(20)
-        .frame(width: 620, height: 560)
+        .frame(width: 860, height: 680)
+        .onChange(of: prayerStore.settings.showHijriFeatures) { _, enabled in
+            if !enabled && selection == .hijriBirthdays { selection = .hijriDates }
+        }
+    }
+
+    @ViewBuilder
+    private var settingsContent: some View {
+        switch selection {
+        case .prayerTimes:
+            PrayerSettingsView()
+        case .hijriDates:
+            CalendarSettingsView()
+        case .hijriBirthdays:
+            PeopleSettingsView()
+        case .about:
+            AboutSettingsView()
+        case .whatsNew:
+            WhatsNewSettingsView()
+        }
+    }
+}
+
+private enum SettingsSection {
+    case prayerTimes, hijriDates, hijriBirthdays, about, whatsNew
+}
+
+private struct SettingsSidebarRow: View {
+    let title: String
+    let systemImage: String
+    let isSelected: Bool
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            Label(title, systemImage: systemImage)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.horizontal, 10)
+                .padding(.vertical, 8)
+                .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .background(isSelected ? Color.accentColor.opacity(0.22) : Color.clear)
+        .clipShape(RoundedRectangle(cornerRadius: 7))
     }
 }
 
@@ -118,7 +218,7 @@ private struct PeopleSettingsView: View {
     var body: some View {
         @Bindable var store = store
         VStack(alignment: .leading, spacing: 16) {
-            Text("People")
+            Text("Hijri Birthdays")
                 .font(.title2.weight(.semibold))
 
             GroupBox("Add a person") {
@@ -154,11 +254,23 @@ private struct PeopleSettingsView: View {
 
 private struct CalendarSettingsView: View {
     @Environment(EventStore.self) private var eventStore
+    @Environment(PrayerStore.self) private var prayerStore
     @State private var title = ""
     @State private var month = 1
     @State private var day = 1
     @State private var note = ""
     @State private var showingResetConfirmation = false
+
+    private var showHijriFeatures: Binding<Bool> {
+        Binding(
+            get: { prayerStore.settings.showHijriFeatures },
+            set: { value in
+                var settings = prayerStore.settings
+                settings.showHijriFeatures = value
+                prayerStore.update(settings)
+            }
+        )
+    }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 14) {
@@ -167,6 +279,16 @@ private struct CalendarSettingsView: View {
                     .font(.title2.weight(.semibold))
                 Spacer()
                 Button("Restore Defaults") { showingResetConfirmation = true }
+            }
+
+            GroupBox("Menu-bar display") {
+                VStack(alignment: .leading, spacing: 5) {
+                    Toggle("Show Hijri date, events, and birthdays", isOn: showHijriFeatures)
+                    Text("This controls the optional Hijri sections in the PrayerCal popover.")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+                .padding(8)
             }
 
             GroupBox("Add a date") {
