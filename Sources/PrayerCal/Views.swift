@@ -172,13 +172,6 @@ struct SettingsView: View {
                     systemImage: "sparkles",
                     isSelected: selection == .whatsNew
                 ) { selection = .whatsNew }
-                Link(destination: URL(string: "https://app.prayercal.com/")!) {
-                    Label("PrayerCal Web App", systemImage: "questionmark.circle")
-                        .foregroundStyle(.secondary)
-                }
-                .buttonStyle(.plain)
-                .padding(.horizontal, 10)
-                .padding(.bottom, 8)
             }
             .padding(10)
             .frame(width: 190)

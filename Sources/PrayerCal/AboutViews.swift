@@ -2,7 +2,7 @@ import SwiftUI
 
 private enum AppInformation {
     static var version: String {
-        Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "0.4.3"
+        Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "0.4.4"
     }
 
     static var build: String {
@@ -73,6 +73,11 @@ struct AboutSettingsView: View {
 struct WhatsNewSettingsView: View {
     private let releases = [
         ReleaseNotes(
+            version: "0.4.4",
+            summary: "Tidies the Settings navigation.",
+            changes: ["Moved the PrayerCal web app link out of the sidebar; it remains available in About and calendar setup."]
+        ),
+        ReleaseNotes(
             version: "0.4.3",
             summary: "Restores the PrayerCal launcher icon and makes release history easier to review.",
             changes: [
@@ -90,16 +95,6 @@ struct WhatsNewSettingsView: View {
             summary: "Updates the macOS application icon treatment.",
             changes: ["Removed the unwanted outer inset from the launcher tile."]
         ),
-        ReleaseNotes(
-            version: "0.4.0",
-            summary: "Makes prayer times the primary experience and brings the Mac app into the wider PrayerCal ecosystem.",
-            changes: [
-                "Added the next-prayer menu-bar status, daily schedule, and seven-day navigation.",
-                "Added onboarding, current-location refresh, city search, and PrayerCal-compatible calculations.",
-                "Added configurable reminders, full-screen alerts, and PrayerCal web calendar handoff.",
-                "Added optional Hijri dates, events, birthdays, and Sparkle automatic updates."
-            ]
-        )
     ]
 
     var body: some View {

@@ -51,6 +51,10 @@ git push origin main v0.4.0
 
 ## Changelog
 
+### 0.4.4 — 2026-09-04
+
+- Removed the PrayerCal web app link from the Settings sidebar; it remains available in About and the calendar setup flow.
+
 ### 0.4.3 — 2026-09-04
 
 - Restored the complete PrayerCal mark in the macOS launcher icon without cropping or distortion.
