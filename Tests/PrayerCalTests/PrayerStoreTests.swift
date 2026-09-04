@@ -1,0 +1,67 @@
+import XCTest
+@testable import PrayerCal
+
+@MainActor
+final class PrayerStoreTests: XCTestCase {
+    private func makeStore() -> PrayerStore {
+        let suite = "PrayerStoreTests-\(UUID().uuidString)"
+        let defaults = UserDefaults(suiteName: suite)!
+        defaults.removePersistentDomain(forName: suite)
+        let store = PrayerStore(defaults: defaults)
+        store.setLocation(latitude: 51.5074, longitude: -0.1278, name: "London", timeZone: TimeZone(identifier: "Europe/London"))
+        return store
+    }
+
+    func testCalculatesSixOrderedTimes() throws {
+        let store = makeStore()
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.timeZone = TimeZone(identifier: "Europe/London")!
+        let date = try XCTUnwrap(calendar.date(from: DateComponents(year: 2026, month: 9, day: 4, hour: 12)))
+        let moments = store.moments(on: date)
+
+        XCTAssertEqual(moments.map(\.name), PrayerName.allCases)
+        XCTAssertEqual(moments.map(\.date), moments.map(\.date).sorted())
+    }
+
+    func testMoonsightingTimesMatchPrayerCalReference() throws {
+        let store = makeStore()
+        var calendar = Calendar(identifier: .gregorian)
+        let timeZone = try XCTUnwrap(TimeZone(identifier: "Europe/London"))
+        calendar.timeZone = timeZone
+        let date = try XCTUnwrap(calendar.date(from: DateComponents(year: 2026, month: 9, day: 4, hour: 12)))
+        let values = Dictionary(uniqueKeysWithValues: store.moments(on: date).map { moment in
+            let parts = calendar.dateComponents([.hour, .minute], from: moment.date)
+            return (moment.name, String(format: "%02d:%02d", parts.hour ?? 0, parts.minute ?? 0))
+        })
+
+        XCTAssertEqual(values[.fajr], "04:40")
+        XCTAssertEqual(values[.sunrise], "06:18")
+        XCTAssertEqual(values[.dhuhr], "13:05")
+        XCTAssertEqual(values[.asr], "16:41")
+        XCTAssertEqual(values[.maghrib], "19:43")
+        XCTAssertEqual(values[.isha], "20:53")
+    }
+
+    func testNextPrayerExcludesSunrise() throws {
+        let store = makeStore()
+        let moments = store.moments(on: Date(timeIntervalSince1970: 1_788_500_000))
+        let fajr = try XCTUnwrap(moments.first { $0.name == .fajr })
+        let next = try XCTUnwrap(store.nextPrayer(asOf: fajr.date.addingTimeInterval(60)))
+        XCTAssertEqual(next.name, .dhuhr)
+    }
+
+    func testCalendarExportIncludesEnabledPrayersAndAlarm() {
+        let store = makeStore()
+        var settings = store.settings
+        var fajr = settings.option(for: .fajr)
+        fajr.reminderEnabled = true
+        fajr.reminderMinutes = 15
+        settings.options[PrayerName.fajr.rawValue] = fajr
+        store.update(settings)
+
+        let output = PrayerCalendarExporter.contents(using: store, days: 1, startingAt: Date(timeIntervalSince1970: 1_788_500_000))
+        XCTAssertTrue(output.contains("SUMMARY:Fajr"))
+        XCTAssertTrue(output.contains("TRIGGER:-PT15M"))
+        XCTAssertFalse(output.contains("SUMMARY:Sunrise"))
+    }
+}

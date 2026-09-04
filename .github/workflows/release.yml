@@ -28,11 +28,26 @@ jobs:
           BUILD_NUMBER: ${{ github.run_number }}
         run: ./package-dmg.sh
 
+      - name: Generate signed update feed
+        env:
+          SPARKLE_PRIVATE_KEY: ${{ secrets.SPARKLE_PRIVATE_KEY }}
+        run: |
+          mkdir -p update-archive
+          cp outputs/PrayerCal.dmg update-archive/PrayerCal.dmg
+          echo "$SPARKLE_PRIVATE_KEY" | .build/artifacts/sparkle/Sparkle/bin/generate_appcast \
+            --ed-key-file - \
+            --download-url-prefix "https://github.com/${{ github.repository }}/releases/download/$GITHUB_REF_NAME/" \
+            --full-release-notes-url "https://github.com/${{ github.repository }}/releases/tag/$GITHUB_REF_NAME" \
+            --maximum-versions 1 \
+            update-archive
+          cp update-archive/appcast.xml outputs/appcast.xml
+
       - name: Publish GitHub release
         env:
           GH_TOKEN: ${{ github.token }}
         run: >-
           gh release create "$GITHUB_REF_NAME"
           outputs/PrayerCal.dmg
+          outputs/appcast.xml
           --title "PrayerCal $GITHUB_REF_NAME"
           --generate-notes

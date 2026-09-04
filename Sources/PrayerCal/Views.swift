@@ -3,38 +3,52 @@ import SwiftUI
 struct MenuContentView: View {
     @Environment(PersonStore.self) private var store
     @Environment(EventStore.self) private var eventStore
+    @Environment(PrayerStore.self) private var prayerStore
+    @Environment(AppUpdater.self) private var updater
     @Environment(Clock.self) private var clock
 
     private var today: HijriDate { HijriCalendar.hijriDate(from: clock.now) }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 14) {
-            VStack(alignment: .leading, spacing: 3) {
-                Text(today.formatted)
-                    .font(.title2.weight(.semibold))
-                Text(clock.now.formatted(date: .complete, time: .omitted))
-                    .foregroundStyle(.secondary)
-            }
-
+        ScrollView {
+            VStack(alignment: .leading, spacing: 14) {
+            PrayerCalBrand(compact: true)
             Divider()
+            PrayerSummaryView()
 
-            eventsSection
-
-            if !store.people.isEmpty {
+            if prayerStore.settings.showHijriFeatures {
                 Divider()
-                peopleSection
+
+                VStack(alignment: .leading, spacing: 3) {
+                    Text(today.formatted)
+                        .font(.title2.weight(.semibold))
+                    Text(clock.now.formatted(date: .complete, time: .omitted))
+                        .foregroundStyle(.secondary)
+                }
+
+                Divider()
+                eventsSection
+
+                if !store.people.isEmpty {
+                    Divider()
+                    peopleSection
+                }
             }
 
             Divider()
 
             HStack {
                 SettingsLink { Label("Settings", systemImage: "gear") }
+                Button("Check for Updates…") { updater.checkForUpdates() }
+                    .disabled(!updater.canCheckForUpdates)
                 Spacer()
                 Button("Quit") { NSApplication.shared.terminate(nil) }
             }
+            }
         }
         .padding(16)
-        .frame(width: 360)
+        .frame(width: 390)
+        .frame(maxHeight: 700)
     }
 
     @ViewBuilder
@@ -98,15 +112,21 @@ private struct EventRow: View {
 }
 
 struct SettingsView: View {
+    @Environment(PrayerStore.self) private var prayerStore
+
     var body: some View {
         TabView {
-            PeopleSettingsView()
-                .tabItem { Label("People", systemImage: "person.2") }
-            CalendarSettingsView()
-                .tabItem { Label("Calendar Dates", systemImage: "calendar") }
+            PrayerSettingsView()
+                .tabItem { Label("Prayer Times", systemImage: "clock") }
+            if prayerStore.settings.showHijriFeatures {
+                PeopleSettingsView()
+                    .tabItem { Label("People", systemImage: "person.2") }
+                CalendarSettingsView()
+                    .tabItem { Label("Hijri Dates", systemImage: "calendar") }
+            }
         }
         .padding(20)
-        .frame(width: 620, height: 560)
+        .frame(width: 680, height: 620)
     }
 }
 
