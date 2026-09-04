@@ -30,14 +30,25 @@ jobs:
           KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
         run: |
           certificate_path="$RUNNER_TEMP/build_certificate.p12"
+          developer_id_g1_path="$RUNNER_TEMP/DeveloperIDCA.cer"
+          developer_id_g2_path="$RUNNER_TEMP/DeveloperIDG2CA.cer"
           keychain_path="$RUNNER_TEMP/prayercal-signing.keychain-db"
           echo -n "$BUILD_CERTIFICATE_BASE64" | base64 --decode -o "$certificate_path"
+          curl --fail --silent --show-error \
+            https://www.apple.com/certificateauthority/DeveloperIDCA.cer \
+            --output "$developer_id_g1_path"
+          curl --fail --silent --show-error \
+            https://www.apple.com/certificateauthority/DeveloperIDG2CA.cer \
+            --output "$developer_id_g2_path"
           security create-keychain -p "$KEYCHAIN_PASSWORD" "$keychain_path"
           security set-keychain-settings -lut 21600 "$keychain_path"
           security unlock-keychain -p "$KEYCHAIN_PASSWORD" "$keychain_path"
+          security import "$developer_id_g1_path" -k "$keychain_path"
+          security import "$developer_id_g2_path" -k "$keychain_path"
           security import "$certificate_path" -P "$P12_PASSWORD" -A -t cert -f pkcs12 -k "$keychain_path"
           security list-keychain -d user -s "$keychain_path"
           security set-key-partition-list -S apple-tool:,apple: -k "$KEYCHAIN_PASSWORD" "$keychain_path"
+          security find-identity -v -p codesigning "$keychain_path" | grep "Developer ID Application"
 
       - name: Build signed universal DMG
         env:
