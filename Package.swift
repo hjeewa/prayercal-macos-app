@@ -2,13 +2,13 @@
 import PackageDescription
 
 let package = Package(
-    name: "HijriBar",
+    name: "PrayerCal",
     platforms: [.macOS(.v14)],
     products: [
-        .executable(name: "HijriBar", targets: ["HijriBar"])
+        .executable(name: "PrayerCal", targets: ["PrayerCal"])
     ],
     targets: [
-        .executableTarget(name: "HijriBar"),
-        .testTarget(name: "HijriBarTests", dependencies: ["HijriBar"])
+        .executableTarget(name: "PrayerCal"),
+        .testTarget(name: "PrayerCalTests", dependencies: ["PrayerCal"])
     ]
 )

@@ -1,5 +1,5 @@
 import XCTest
-@testable import HijriBar
+@testable import PrayerCal
 
 final class HijriCalendarTests: XCTestCase {
     private var utcGregorian: Calendar {
@@ -15,8 +15,8 @@ final class HijriCalendarTests: XCTestCase {
     }
 
     func testUpcomingEventsWrapIntoNextYear() {
-        let events = HijriEvents.upcoming(after: HijriDate(year: 1445, month: 12, day: 10), limit: 2)
-        XCTAssertEqual(events.map(\.title), ["Islamic New Year", "Ashura"])
+        let events = HijriEvents.upcoming(after: HijriDate(year: 1445, month: 12, day: 10), in: HijriEvents.defaults, limit: 2)
+        XCTAssertEqual(events.map(\.title), ["Days of Tashreeq", "Islamic New Year"])
     }
 
     func testBirthdayCountdownOnBirthday() throws {

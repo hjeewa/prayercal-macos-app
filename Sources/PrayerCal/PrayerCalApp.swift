@@ -22,15 +22,17 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 }
 
 @main
-struct HijriBarApp: App {
+struct PrayerCalApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
     @State private var store = PersonStore()
+    @State private var eventStore = EventStore()
     @State private var clock = Clock()
 
     var body: some Scene {
         MenuBarExtra {
             MenuContentView()
                 .environment(store)
+                .environment(eventStore)
                 .environment(clock)
         } label: {
             Text(HijriCalendar.hijriDate(from: clock.now).shortFormatted)
@@ -41,6 +43,7 @@ struct HijriBarApp: App {
         Settings {
             SettingsView()
                 .environment(store)
+                .environment(eventStore)
         }
     }
 }

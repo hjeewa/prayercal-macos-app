@@ -2,6 +2,7 @@ import SwiftUI
 
 struct MenuContentView: View {
     @Environment(PersonStore.self) private var store
+    @Environment(EventStore.self) private var eventStore
     @Environment(Clock.self) private var clock
 
     private var today: HijriDate { HijriCalendar.hijriDate(from: clock.now) }
@@ -38,11 +39,11 @@ struct MenuContentView: View {
 
     @ViewBuilder
     private var eventsSection: some View {
-        let eventsToday = HijriEvents.on(today)
+        let eventsToday = HijriEvents.on(today, in: eventStore.events)
         if eventsToday.isEmpty {
             Text("Upcoming")
                 .font(.headline)
-            ForEach(HijriEvents.upcoming(after: today)) { event in
+            ForEach(HijriEvents.upcoming(after: today, in: eventStore.events)) { event in
                 EventRow(event: event)
             }
             Text("Dates may vary by local moon sighting.")
@@ -88,7 +89,7 @@ private struct EventRow: View {
                 .frame(width: 24)
             VStack(alignment: .leading, spacing: 2) {
                 Text(event.title)
-                Text("\(HijriCalendar.monthName(event.month)) · \(event.note)")
+                Text(event.note.isEmpty ? HijriCalendar.monthName(event.month) : "\(HijriCalendar.monthName(event.month)) · \(event.note)")
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }
@@ -97,6 +98,19 @@ private struct EventRow: View {
 }
 
 struct SettingsView: View {
+    var body: some View {
+        TabView {
+            PeopleSettingsView()
+                .tabItem { Label("People", systemImage: "person.2") }
+            CalendarSettingsView()
+                .tabItem { Label("Calendar Dates", systemImage: "calendar") }
+        }
+        .padding(20)
+        .frame(width: 620, height: 560)
+    }
+}
+
+private struct PeopleSettingsView: View {
     @Environment(PersonStore.self) private var store
     @State private var name = ""
     @State private var birthday = Calendar.current.date(byAdding: .year, value: -30, to: .now) ?? .now
@@ -130,13 +144,86 @@ struct SettingsView: View {
                 }
             }
         }
-        .padding(20)
-        .frame(width: 540, height: 500)
     }
 
     private func addPerson() {
         store.add(name: name, birthday: birthday)
         name = ""
+    }
+}
+
+private struct CalendarSettingsView: View {
+    @Environment(EventStore.self) private var eventStore
+    @State private var title = ""
+    @State private var month = 1
+    @State private var day = 1
+    @State private var note = ""
+    @State private var showingResetConfirmation = false
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 14) {
+            HStack {
+                Text("Significant Hijri Dates")
+                    .font(.title2.weight(.semibold))
+                Spacer()
+                Button("Restore Defaults") { showingResetConfirmation = true }
+            }
+
+            GroupBox("Add a date") {
+                Form {
+                    TextField("Event name", text: $title)
+                    HStack {
+                        Picker("Month", selection: $month) {
+                            ForEach(1...12, id: \.self) { value in
+                                Text(HijriCalendar.monthName(value)).tag(value)
+                            }
+                        }
+                        Stepper("Day \(day)", value: $day, in: 1...30)
+                            .frame(width: 120)
+                    }
+                    TextField("Note (optional)", text: $note)
+                    Button("Add Date", action: addEvent)
+                        .disabled(title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+                }
+                .padding(8)
+            }
+
+            List {
+                ForEach(eventStore.events) { event in
+                    VStack(alignment: .leading, spacing: 3) {
+                        HStack {
+                            Text(event.title)
+                                .font(.headline)
+                            Spacer()
+                            Text("\(event.day) \(HijriCalendar.monthName(event.month))")
+                                .foregroundStyle(.secondary)
+                        }
+                        if !event.note.isEmpty {
+                            Text(event.note)
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                        }
+                    }
+                    .padding(.vertical, 4)
+                }
+                .onDelete(perform: eventStore.remove)
+            }
+
+            Text("Swipe left or press Delete to remove a date. Historical dates with differing reports are labelled in their notes.")
+                .font(.caption)
+                .foregroundStyle(.secondary)
+        }
+        .confirmationDialog("Restore the seeded calendar dates?", isPresented: $showingResetConfirmation) {
+            Button("Restore Defaults", role: .destructive) { eventStore.resetToDefaults() }
+        } message: {
+            Text("This removes any dates you added manually.")
+        }
+    }
+
+    private func addEvent() {
+        eventStore.add(title: title, month: month, day: day, note: note)
+        title = ""
+        note = ""
     }
 }
 

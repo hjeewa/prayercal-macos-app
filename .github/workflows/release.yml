@@ -33,6 +33,6 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: >-
           gh release create "$GITHUB_REF_NAME"
-          outputs/HijriBar.dmg
-          --title "HijriBar $GITHUB_REF_NAME"
+          outputs/PrayerCal.dmg
+          --title "PrayerCal $GITHUB_REF_NAME"
           --generate-notes

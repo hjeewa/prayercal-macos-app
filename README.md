@@ -1,12 +1,12 @@
-# HijriBar
+# PrayerCal
 
-A small native macOS menu-bar app showing the current Hijri date, notable Sunni calendar events, and saved people's Hijri birthdays and ages.
+A prayer-focused native macOS menu-bar app. Its first features provide the current Hijri date, notable Sunni calendar events, and saved people's Hijri birthdays and ages.
 
 ## Download
 
-[Download the latest HijriBar DMG](https://github.com/hjeewa/prayercal-macos-app/releases/latest/download/HijriBar.dmg)
+[Download the latest PrayerCal DMG](https://github.com/hjeewa/prayercal-macos-app/releases/latest/download/PrayerCal.dmg)
 
-Requires macOS 14 or later. Open the DMG and drag **HijriBar** into **Applications**. The current builds are ad-hoc signed but not Apple-notarized, so macOS may ask you to confirm the first launch in **System Settings → Privacy & Security**.
+Requires macOS 14 or later. Open the DMG and drag **PrayerCal** into **Applications**. The current builds are ad-hoc signed but not Apple-notarized, so macOS may ask you to confirm the first launch in **System Settings → Privacy & Security**.
 
 ## Features
 
@@ -20,7 +20,7 @@ Requires macOS 14 or later. Open the DMG and drag **HijriBar** into **Applicatio
 ## Run locally
 
 ```sh
-swift run HijriBar
+swift run PrayerCal
 ```
 
 The app appears in the menu bar as a short Hijri date. Click it to see the full date, observances, and saved birthdays. Open **Settings** from the popover to add or edit people.
@@ -29,16 +29,24 @@ Hijri conversion uses Apple's Umm al-Qura calendar and works offline. Calendar d
 
 ## Versioning and releases
 
-HijriBar follows [Semantic Versioning](https://semver.org/). The current version is stored in [`VERSION`](VERSION). Pushing a matching tag such as `v0.2.0` runs the test suite, builds a universal app, creates a DMG, and publishes it on GitHub Releases.
+PrayerCal follows [Semantic Versioning](https://semver.org/). The current version is stored in [`VERSION`](VERSION). Pushing a matching tag such as `v0.4.0` runs the test suite, builds a universal app, creates a DMG, and publishes it on GitHub Releases.
 
 To publish a release after updating `VERSION` and the changelog:
 
 ```sh
-git tag v0.2.0
-git push origin main v0.2.0
+git tag v0.4.0
+git push origin main v0.4.0
 ```
 
 ## Changelog
+
+### 0.3.0 — 2026-09-04
+
+- Renamed the app from HijriBar to PrayerCal to reflect its prayer-focused direction.
+- Added a Calendar Dates settings screen where every event can be viewed or removed.
+- Added support for manually creating significant or personal Hijri dates.
+- Expanded the seeded calendar with Tasu'a, the last ten nights of Ramadan, the first ten days of Dhu al-Hijjah, the Days of Tashreeq, and selected prophetic-era anniversaries including Badr, Uhud, the Hijrah arrival, and the Conquest of Makkah.
+- Added clear notes where the precise historical date differs between reports.
 
 ### 0.2.0 — 2026-09-04
 
