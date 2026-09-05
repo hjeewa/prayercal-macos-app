@@ -66,6 +66,7 @@ jobs:
             --apple-id "$APPLE_ID" \
             --password "$APPLE_APP_SPECIFIC_PASSWORD" \
             --team-id "$APPLE_TEAM_ID" \
+            --no-s3-acceleration \
             --wait
           xcrun stapler staple outputs/PrayerCal.dmg
           xcrun stapler validate outputs/PrayerCal.dmg
